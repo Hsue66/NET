@@ -4,24 +4,18 @@
 
 
 void alarmHandler(int sig)
-{
-	;
-}
+{ }
 
 void signal_handler(int sig)
-{
-//	printf("5초지남\n");
-//	sigaction(SIGALRM,&actol,NULL);
-}
+{ }
 
 int main(int argc, char ** argv)
 {
 	signal(SIGALRM, alarmHandler);
 
-	//
+	// make signal action variable
 	struct sigaction act;
 	act.sa_handler = signal_handler;
-	sigemptyset(&act.sa_mask);
 	sigaction(SIGALRM, &act ,NULL);
 
 	if(argc != 2)
@@ -45,22 +39,20 @@ int main(int argc, char ** argv)
 	
 	while(true)
 	{
-		//
+		// put string and send to server
 		scanf("%s",sendBuffer);
-
-		//
 		sendto(clientSocketFD, sendBuffer, strlen(sendBuffer), 0,(struct sockaddr*)&serverSocket, sizeof(serverSocket));
-		//
+		
+		// waiting until timeout 
 		alarm(TIMEOUT);
 		if(( readBytes = recvfrom(clientSocketFD, receiveBuffer, BUFFER_SIZE, 0, NULL,NULL))<0)
 		{
 			if(errno ==EINTR)	
-			{
 				fprintf(stderr,"socket timeout\n");
-			}
 			else
 				err_sys("recvfrom error");
 		}
+		// receive string from server
 		else
 		{
 			alarm(0);
