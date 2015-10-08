@@ -11,7 +11,7 @@
 #include <wait.h>
 
 #define PORT 10001
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 100
 
 
 int main(int argc, char** argv) {
@@ -34,13 +34,13 @@ int main(int argc, char** argv) {
 		char receiveBuffer[BUFFER_SIZE];
 		while (true) {
 			//서버에 문자열을 보낸 뒤 서버가 보낸 echo를 받아 출력하시오.
-			 scanf("%s",sendBuffer);
-			 write(connectFD,sendBuffer, BUFFER_SIZE);
+			 fgets(sendBuffer,sizeof(sendBuffer),stdin);
+			 
+			 write(connectFD,sendBuffer, strlen(sendBuffer));
 
-			 readBytes = read(connectFD,receiveBuffer, BUFFER_SIZE);
-			 receiveBuffer[readBytes]='\0';
-			 fputs(receiveBuffer, stdout);
-			 fflush(stdout);
+			 writtenBytes = read(connectFD,receiveBuffer, BUFFER_SIZE-1);
+			 receiveBuffer[writtenBytes]='\0';
+			printf("%s",receiveBuffer);
 		}
 	}
 	close(connectFD);

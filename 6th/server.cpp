@@ -12,43 +12,22 @@
 
 #define PORT 10001
 #define LISTEN_QUEUE_SIZE 5
-#define N 4
-#define MAXLINE 100
-
-int count =0;
+#define BUFFER_SIZE 100
 
 void childHandler(int signal)
 {
-	//
-	int child_status;
+	// when client die, child process die
 	pid_t pid;
-	while((pid = waitpid(-1, &child_status,WNOHANG)) > 0)
+	while((pid = waitpid(-1, 0,WNOHANG)) > 0)
 	{
-		count --;
 		printf("Received signal %d from process %d\n",signal,pid);
 	}
 }
 
-void echo(int connfd)
-{
-	size_t n;
-	char buf[MAXLINE];
-//	rio_t rio;
-
-//	rio_readinitb(&rio, connfd);
-	n=read(connfd, buf, sizeof(buf));
-	while(n != 0 )
-	{
-		write(connfd, buf,sizeof(buf));
-	}
-
-}
-
 int main()
 {
-	//
+	// catch child signal
 	signal(SIGCHLD, childHandler);
-	pid_t pid[N];
 
 	struct sockaddr_in listenSocket;
 	memset(&listenSocket, 0 , sizeof(listenSocket));
@@ -82,17 +61,20 @@ int main()
 
 		printf("Client: %s \n", peerName);
 		
-		//
-		count= N;
-		for ( int i =0; i<count; i++)
+		// when client connected, fork to make child process and do echo
+		char str[BUFFER_SIZE];
+		int str_len;
+
+		if((fork()) == 0)
 		{
-			if((pid[i] =fork()) == 0)
+			close(listenFD);
+			while((str_len = read(connectFD, str, BUFFER_SIZE))>0)
 			{
-				close(listenFD);
-				echo(connectFD);
-				close(connectFD);
-				exit(0);
+				write(connectFD, str, str_len);
 			}
+
+			close(connectFD);
+			exit(0);
 		}
 		close(connectFD);
 	}

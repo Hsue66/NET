@@ -1,5 +1,4 @@
 #include "header.h"
-#define MAXLINE 100
 
 int main()
 {
@@ -26,7 +25,7 @@ int main()
 	while(1)
 	{
 		//
-		readBytes = recvfrom(serverSocketFD, sendBuffer, MAXLINE, 0, (struct sockaddr*)& clientSocket, &connectLength);
+		readBytes = recvfrom(serverSocketFD, sendBuffer, BUFFER_SIZE, 0, (struct sockaddr*)& clientSocket, &connectLength);
 		sendto(serverSocketFD, sendBuffer, readBytes, 0, (struct sockaddr*)&clientSocket, connectLength);
 	}
 	return 0;
