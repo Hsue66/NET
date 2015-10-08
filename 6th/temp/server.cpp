@@ -24,7 +24,7 @@ int main()
 	socklen_t connectLength = sizeof(clientSocket);
 	while(1)
 	{
-		//
+		// receive string from send string to client
 		readBytes = recvfrom(serverSocketFD, sendBuffer, BUFFER_SIZE, 0, (struct sockaddr*)& clientSocket, &connectLength);
 		sendto(serverSocketFD, sendBuffer, readBytes, 0, (struct sockaddr*)&clientSocket, connectLength);
 	}
