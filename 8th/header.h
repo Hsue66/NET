@@ -1,0 +1,92 @@
+//header.h
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <unistd.h>
+# include <errno.h>
+# include <sys/types.h>
+# include <wait.h>
+# define PORT 10001
+# define BUFFER_SIZE 100
+
+
+ssize_t readn(int socketFD, char* buffer, size_t length) {
+	ssize_t readBytes = 0;
+	size_t leftBytes = length;
+	char* pointer = buffer;
+	while (leftBytes > 0) {
+		readBytes = read(socketFD, pointer, length);
+		if (readBytes < 0) {
+			if (errno == EINTR) continue;
+			else return -1;
+		} else if (readBytes == 0) {
+			break;
+		}
+		leftBytes -= readBytes;
+		pointer += readBytes;
+	}
+	return length - leftBytes;
+}
+ssize_t readvn(int socketFD, char* buffer, size_t maxLength) {
+	ssize_t readBytes = 0;
+	size_t valueLength;
+	readBytes = readn(socketFD, (char*)&valueLength, sizeof(size_t));
+	if (readBytes != sizeof(size_t)) {
+		if (readBytes < 0) return -1;
+		else return 0;
+	}
+	valueLength = ntohl(valueLength);
+	if (valueLength > maxLength) {
+		while (valueLength > 0) {
+			readBytes = readn(socketFD, buffer, maxLength);
+			if (readBytes != maxLength) {
+				if (readBytes < 0) return -1;
+				else return 0;
+			}
+			valueLength -= readBytes;
+			if (valueLength < maxLength) maxLength = valueLength;
+		}
+		errno = EMSGSIZE;
+		return -1;
+	}
+	readBytes = readn(socketFD, buffer, valueLength);
+	if (readBytes != valueLength) {
+		if (readBytes < 0) return -1;
+		else return 0;
+	}
+	return readBytes;
+}
+
+ssize_t writen(int socketFD, const char* buffer, size_t length) {
+	ssize_t writtenBytes = 0;
+	size_t leftBytes = length;
+	char* pointer = (char*)buffer;
+	while (leftBytes > 0) {
+		writtenBytes = write(socketFD, pointer, length);
+		if (writtenBytes <= 0) {
+			if (errno == EINTR) continue;
+			else return -1;
+		}
+		leftBytes -= writtenBytes;
+		pointer += writtenBytes;
+	}
+	return length - leftBytes;
+}
+ssize_t writevn(int socketFD, const char* buffer, size_t length) {
+	ssize_t writtenBytes = 0;
+	size_t valueLength = htonl(length);
+	writtenBytes = writen(socketFD, (char*) &valueLength, sizeof(size_t));
+	if (writtenBytes != sizeof(size_t)) {
+		if (writtenBytes < 0) return -1;
+		else return 0;
+	}
+	writtenBytes = writen(socketFD, buffer, length);
+	if (writtenBytes != length) {
+		if (writtenBytes < 0) return -1;
+		else return 0;
+	}
+	return writtenBytes;
+}
