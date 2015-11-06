@@ -44,8 +44,24 @@ int main()
 	sem_init(&shared.full,0,0);
 
 	for(int i=0; i<N; i++)
+	{
+		//P(&shared.empty);
 		pthread_create(&tid[i],NULL,thread,&i);
+		//V(&shared.full);
+	}
 
+	/*
+	int i =0;
+	while(i<N)
+	{
+
+		int * conn = (int*)malloc(sizeof(int));
+		pthread_create(&tid[i],NULL,thread,conn);
+//		P(&shared.full);
+		i++;
+//		V(&shared.empty);
+	}
+*/
 	for(int i=0; i<N; i++)
 		pthread_join(tid[i],NULL);
 

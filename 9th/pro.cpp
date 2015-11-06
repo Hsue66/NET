@@ -31,10 +31,9 @@ void *producer(void *arg)
 	{
 		item = i;
 
-		printf("Produced %d \n",item);
-		
 		P(&shared.empty);	
 		shared.buf = item;
+		printf("Produced %d \n",item);
 		V(&shared.full);
 	}
 	return NULL;
@@ -47,16 +46,14 @@ void *consumer(void *arg)
 	{
 		P(&shared.full);
 		item = shared.buf;
-		P(&wshared.empty);
 		V(&shared.empty);
-		V(&wshared.full);
 
 		printf("consumed %d\n",item);
 		
-		P(&wshared.full);
+		P(&wshared.empty);
 		item++;
 		shared.buf = item;
-		V(&wshared.empty);
+		V(&wshared.full);
 
 		printf("produced %d by consumer \n",item);
 	}
