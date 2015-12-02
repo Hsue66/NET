@@ -8,10 +8,10 @@ struct MSGA msgA;
 struct MSGB msgB;
 struct MSGC msgC;
 
-int Rtopics[3]={0}; // register topic variable
+int Rtopics[3]={0}; // write topic variable
+int Stopics[3]={0};	// read topic variable
 int pub =0;
 int sub =0;
-int full=0;
 
 void* clientFunc(void* arguments)
 {
@@ -19,16 +19,14 @@ void* clientFunc(void* arguments)
 	pthread_detach(pthread_self());
 	free(arguments);
 
+
 	if(pub>=PUB)	
+	{
+		printf("too many publisher!\n");
 		close(connfd);
-	
+	}
 	else
 	{
-//		msgA = initA(msgA);
-//		msgB = initB(msgB);
-//		msgC = initC(msgC);
-
-
 		char Wbuffer[BUFFER_SIZE], Rbuffer[BUFFER_SIZE];
 		
 		int n = readvn(connfd, Rbuffer, BUFFER_SIZE);
@@ -184,26 +182,10 @@ int main(int argc, char** argv)
 
 		pthread_t tid;
 
-		if(pub<PUB)
-		{
-			int *connfd = (int *)malloc(sizeof(int));
-			*connfd = accept(listenFD, (struct sockaddr*)&caddr, &clen);
+		int *connfd = (int *)malloc(sizeof(int));
+		*connfd = accept(listenFD, (struct sockaddr*)&caddr, &clen);
 			
-			pthread_create(&tid, NULL, clientFunc, connfd);
-		}
-		else
-		{
-			if(full==0)
-			{
-				printf("too many publisher!\n");
-				fflush(stdout);	
-				int *connFD = (int *)malloc(sizeof(int));
-				*connFD = accept(listenFD, (struct sockaddr*)&caddr, &clen);
-			
-				pthread_create(&tid, NULL, clientFunc, connFD);
-				full=1;
-			}
-		}
+		pthread_create(&tid, NULL, clientFunc, connfd);
 	}
 	return 0;
 

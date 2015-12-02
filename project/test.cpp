@@ -3,7 +3,7 @@
 
 struct topicA
 {
-	char id[5];
+	char id;
 	char msg[5];
 }A;
 
@@ -11,7 +11,7 @@ struct topicA initA(struct topicA T)
 {
 	char temp[20];
 	//temp="N";
-	sprintf(T.id, "%s","N");
+//	sprintf(T.id, "%s","N");
 	return T;
 }
 
@@ -30,7 +30,8 @@ int main()
 //	printf("%s\n",buf);
 	//char a[2]="a";
 	//sprintf(A.msg,"%s",a);
-	printf("%s\n",A.id);
-	A = initA(A);
-	printf("%s\n",A.id);
+//	printf("%s\n",A.id);
+//	A = initA(A);
+	A.id = 'N';
+	printf("%c\n",A.id);
 }

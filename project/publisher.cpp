@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 	time_t now;
 	struct tm *t;
 
+	/** socket struct  **/
 	struct sockaddr_in connaddr;
 	memset(&connaddr, 0, sizeof(connaddr));
 	connaddr.sin_family = AF_INET;
@@ -33,12 +34,12 @@ int main(int argc, char **argv)
 	int connFD = socket(AF_INET, SOCK_STREAM, 0);
 
 	if(connect(connFD, (struct sockaddr*) &connaddr, sizeof(connaddr)) == -1)
-	{
+	{	// connection fail
 		printf("Cannot connect.\n");
 		return -1;
 	}
 	else
-	{
+	{	// connected well
 		char Wbuffer[BUFFER_SIZE],Rbuffer[BUFFER_SIZE],Pub[BUFFER_SIZE];
 		
 		memset(&Wbuffer, 0, BUFFER_SIZE);
@@ -85,35 +86,33 @@ int main(int argc, char **argv)
 					
 				if(name == 0)
 				{
-					sprintf(Wbuffer,"%s","A");
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
-					
-					sprintf(Wbuffer,"NEW MSG : %d AT %s",rand()%1000,timestamp(t));
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
-
+					struct MSGA msgA;
+					msgA.id ='A';
+					sprintf(msgA.ext,"I'm topic %d",name);
+					sprintf(msgA.msg,"Hello | AT %s",timestamp(t));
+					writevn(connFD, (char *)&msgA, sizeof(msgA));
 				}
 				else if(name == 1)
-				{
-					sprintf(Wbuffer,"%s","B");
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
-					
-					sprintf(Wbuffer,"NEW MSG : %d AT %s",rand()%100,timestamp(t));
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
+				{	
+					struct MSGB msgB;
+					msgB.id ='B';
+					sprintf(msgB.msg,"Thankyou | AT %s",timestamp(t));
+					writevn(connFD, (char *)&msgB, sizeof(msgB));
 				}
 				else 
 				{
-					sprintf(Wbuffer,"%s","C");
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
-					
-					sprintf(Wbuffer,"NEW MSG : %d AT %s",rand()%10,timestamp(t));
-					writevn(connFD, Wbuffer, strlen(Wbuffer));
+					struct MSGC msgC;
+					msgC.id='C';
+					msgC.num = name;
+					sprintf(msgC.msg,"I can send INT | AT %s",timestamp(t));
+					writevn(connFD, (char *)&msgC, sizeof(msgC));
+
 				}
 				if( (n = readvn(connFD,Rbuffer,BUFFER_SIZE))>0)
 				{
 					Rbuffer[n]='\0';
 					printf("%s\n",Rbuffer);
 				}
-//				while(1);				
 				sleep(5);
 				}
 			}

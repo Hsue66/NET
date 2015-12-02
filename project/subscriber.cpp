@@ -1,11 +1,9 @@
 # include "header.h"
 # include <time.h>
 
+int name;
 int main(int argc, char **argv)
 {
-	char retry[BUFFER_SIZE];
-	sprintf(retry,"%s","! Denied !");
-
 	if(argc != 2)
 	{
 		printf("Usage: %s username!\n",argv[0]);
@@ -27,44 +25,66 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		char Wbuffer[BUFFER_SIZE],Rbuffer[BUFFER_SIZE],Pub[BUFFER_SIZE];
-		sprintf(Pub, "%s","S");
-		writevn(connFD, Pub, strlen(Pub));
+		/** initialize buffer **/
+		char Wbuffer[BUFFER_SIZE],Rbuffer[BUFFER_SIZE],Sub[BUFFER_SIZE];
+		memset(&Wbuffer, 0, BUFFER_SIZE);
+		memset(&Rbuffer, 0, BUFFER_SIZE);
+		memset(&Sub, 0, BUFFER_SIZE);
+
+		/** sed S tag **/
+		sprintf(Sub, "%s","S");
+		writevn(connFD, Sub, strlen(Sub));				
 		
-		int temp[3]={0};	
-		while(1)
+		/** send name **/
+		srand(time(NULL));
+		sprintf(Wbuffer,"%d",rand()%3);
+
+		printf("%s\n",Wbuffer);
+		fflush(stdout);
+
+		name = atoi(Wbuffer);
+		writevn(connFD, Wbuffer, strlen(Wbuffer));
+
+		
+		int n = readvn(connFD, Rbuffer, BUFFER_SIZE);
+		Rbuffer[n]='\0';
+		printf("%s\n",Rbuffer);
+		fflush(stdout);
+		
+		/** registered well - Accepted  **/
+		if(strcmp(Rbuffer,"! Accepted !")==0)
 		{
-			srand(time(NULL));
-			do
-			{
-			sprintf(Wbuffer,"%d", rand()%3);
-			}while(temp[atoi(Wbuffer)]==1);
-
-			printf("%s\n",Wbuffer);
-			fflush(stdout);
-
-			writevn(connFD, Wbuffer, strlen(Wbuffer));
+			printf("hello\n");
+			while(1);
+																		 
+		//	{
+			/*	srand(time(NULL));
+				sprintf(Wbuffer,"%d", rand()%3);
 	
-			int n = readvn(connFD, Rbuffer, BUFFER_SIZE);
-			Rbuffer[n]='\0';
-			printf("%s\n",Rbuffer);			
-			printf("%s\n",retry);			
-			
-			printf("%d\n",strcmp(Rbuffer,retry));
-			fflush(stdout);
+				name = atoi(Wbuffer);
+				printf("%s\n",Wbuffer);
+				fflush(stdout);
 
-				if(strcmp(Rbuffer,retry)!=0)
-				{
-					printf("hello\n");
-					while(1);
-				}
-				else
-				{
-					sleep(1);
-					temp[atoi(Wbuffer)]=1;
-					printf("%d,%d,%d\n",temp[0],temp[1],temp[2]);
-					continue;
-				}
+				writevn(connFD, Wbuffer, strlen(Wbuffer));
+	
+				int n = readvn(connFD, Rbuffer, BUFFER_SIZE);
+				Rbuffer[n]='\0';
+				printf("%s\n",Rbuffer);			
+			
+				fflush(stdout);
+
+				printf("hello\n");
+			while(1);
+			*/
+		//	}
 		}
+	//	else
+	//	{
+	//		printf("hello");
+	//		while(1);
+	//	}
+
 	}
+	fflush(stdout);
+	return 0;
 }

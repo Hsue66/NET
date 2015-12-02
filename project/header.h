@@ -14,40 +14,43 @@
 # include <stdlib.h>
 //readvn.cpp
 # include <errno.h>
+# define BUFFER 100
 
 struct MSGA
 {
-	char id[BUFFER_SIZE];
-	char msg[BUFFER_SIZE];
+	char id;
+	char ext[BUFFER];
+	char msg[BUFFER];
 };
 
 struct MSGB
 {
-	char id[BUFFER_SIZE];
-	char msg[BUFFER_SIZE];
+	char id;
+	char msg[BUFFER];
 };
 
 struct MSGC
 {
-	char id[BUFFER_SIZE];
-	char msg[BUFFER_SIZE];
+	char id;
+	int num;
+	char msg[BUFFER];
 };
 
 struct MSGA initA(struct MSGA T)
 {
-	sprintf(T.id,"%s","N"); 
+	T.id='N'; 
 	return T;
 }
 
 struct MSGB initB(struct MSGB T)
 {
-	sprintf(T.id,"%s","N"); 
+	T.id='N'; 
 	return T;
 }
 
 struct MSGC initC(struct MSGC T)
 {
-	sprintf(T.id,"%s","N"); 
+	T.id='N'; 
 	return T;
 }
 
