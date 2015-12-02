@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 					Rbuffer[n]='\0';
 					printf("%s\n",Rbuffer);
 				}
-				sleep(5);
+				sleep(10);
 				}
 			}
 			else

@@ -33,5 +33,6 @@ int main()
 //	printf("%s\n",A.id);
 //	A = initA(A);
 	A.id = 'N';
-	printf("%c\n",A.id);
+	if(A.id == 'N')
+		printf("%c\n",A.id);
 }

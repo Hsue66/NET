@@ -54,36 +54,35 @@ int main(int argc, char **argv)
 		/** registered well - Accepted  **/
 		if(strcmp(Rbuffer,"! Accepted !")==0)
 		{
-			printf("hello\n");
-			while(1);
+			printf("Hello\n");
+			while(1)
+			{
+				n= readvn(connFD, Rbuffer, BUFFER_SIZE);
+				if(n>0)
+				{
+					if(name==0)
+					{
+						struct MSGA msgA;
+						memcpy(&msgA,Rbuffer, sizeof(msgA));
+						printf("%c : %s || %s\n",msgA.id, msgA.ext, msgA.msg);
+					}
+					else if(name ==1)
+					{
+						struct MSGB msgB;
+						memcpy(&msgB,Rbuffer, sizeof(msgB));
+						printf("%c : %s\n",msgB.id, msgB.msg);
+					}
+					else
+					{
+						struct MSGC msgC;
+						memcpy(&msgC,Rbuffer, sizeof(msgC));
+						printf("%c : %d || %s\n",msgC.id, msgC.num, msgC.msg);
+					}
+				}
+
+			}
 																		 
-		//	{
-			/*	srand(time(NULL));
-				sprintf(Wbuffer,"%d", rand()%3);
-	
-				name = atoi(Wbuffer);
-				printf("%s\n",Wbuffer);
-				fflush(stdout);
-
-				writevn(connFD, Wbuffer, strlen(Wbuffer));
-	
-				int n = readvn(connFD, Rbuffer, BUFFER_SIZE);
-				Rbuffer[n]='\0';
-				printf("%s\n",Rbuffer);			
-			
-				fflush(stdout);
-
-				printf("hello\n");
-			while(1);
-			*/
-		//	}
 		}
-	//	else
-	//	{
-	//		printf("hello");
-	//		while(1);
-	//	}
-
 	}
 	fflush(stdout);
 	return 0;
