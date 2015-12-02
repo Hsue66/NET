@@ -15,25 +15,41 @@
 //readvn.cpp
 # include <errno.h>
 
-struct msgA
+struct MSGA
 {
-	int id;
+	char id[BUFFER_SIZE];
 	char msg[BUFFER_SIZE];
-}msgA;
+};
 
-struct msgB
+struct MSGB
 {
-	int id;
+	char id[BUFFER_SIZE];
 	char msg[BUFFER_SIZE];
-}msgB;
+};
 
-struct topicC
+struct MSGC
 {
-	int id;
+	char id[BUFFER_SIZE];
 	char msg[BUFFER_SIZE];
-}msgC;
+};
 
+struct MSGA initA(struct MSGA T)
+{
+	sprintf(T.id,"%s","N"); 
+	return T;
+}
 
+struct MSGB initB(struct MSGB T)
+{
+	sprintf(T.id,"%s","N"); 
+	return T;
+}
+
+struct MSGC initC(struct MSGC T)
+{
+	sprintf(T.id,"%s","N"); 
+	return T;
+}
 
 ssize_t readn(int socketFD, char* buffer, size_t length) {
 

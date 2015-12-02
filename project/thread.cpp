@@ -4,6 +4,9 @@
 # define PUB 3
 # define SUB 3
 
+struct MSGA msgA;
+struct MSGB msgB;
+struct MSGC msgC;
 
 int Rtopics[3]={0}; // register topic variable
 int pub =0;
@@ -21,7 +24,11 @@ void* clientFunc(void* arguments)
 	
 	else
 	{
-	
+//		msgA = initA(msgA);
+//		msgB = initB(msgB);
+//		msgC = initC(msgC);
+
+
 		char Wbuffer[BUFFER_SIZE], Rbuffer[BUFFER_SIZE];
 		
 		int n = readvn(connfd, Rbuffer, BUFFER_SIZE);
@@ -48,8 +55,81 @@ void* clientFunc(void* arguments)
 					printf("%d, %d, %d\n",Rtopics[0],Rtopics[1],Rtopics[2]);
 					choice=0;
 
-					/****/
-					
+
+
+		while(1){
+
+					/** receive msg from publisher **/
+					if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+					{	// read client name first
+						Rbuffer[n]='\0';
+						int name = atoi(Rbuffer);
+//						printf("R NAME %d\n",name);					
+
+						if(name == 0)
+						{
+							if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+							{	// read msg
+								Rbuffer[n]='\0';
+								sprintf(msgA.id,"%s", Rbuffer);
+								if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+								{
+									Rbuffer[n]='\0';
+									sprintf(msgA.msg,"%s", Rbuffer);
+									
+									printf("%s: %s\n",msgA.id,msgA.msg);
+								}
+								else
+									sprintf(msgA.id,"%s","N");
+							}
+							else
+								sprintf(msgA.id,"%s","N");
+						}
+						else if(name == 1)
+						{
+							if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+							{	// read msg
+								Rbuffer[n]='\0';
+								sprintf(msgB.id,"%s", Rbuffer);
+								if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+								{
+									Rbuffer[n]='\0';
+									sprintf(msgB.msg,"%s", Rbuffer);
+									
+									printf("%s: %s\n",msgB.id,msgB.msg);
+								}
+								else
+									sprintf(msgB.id,"%s","N");
+							}
+							else
+								sprintf(msgB.id,"%s","N");
+						}
+						else
+						{
+							if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+							{	// read msg
+								Rbuffer[n]='\0';
+								sprintf(msgC.id,"%s",Rbuffer);
+								if((n = readvn(connfd, Rbuffer, BUFFER_SIZE))>0)
+								{
+									Rbuffer[n]='\0';
+									sprintf(msgC.msg,"%s",Rbuffer);
+									
+									printf("%s: %s\n",msgC.id,msgC.msg);
+								}
+								else
+									sprintf(msgC.id,"%s","N");
+							}
+							else
+								sprintf(msgC.id,"%s","N");
+						}
+
+												
+						sprintf(Wbuffer,"%s","! Received !");	
+						writevn(connfd,Wbuffer,strlen(Wbuffer));
+					}		
+			}
+
 				}
 				else
 				{
@@ -71,9 +151,11 @@ void* clientFunc(void* arguments)
 
 int main(int argc, char** argv)
 {
-//	int topics[3]={0};
-//	int	pub=0;
-//	int sub=0;
+	/** initialize msg **/
+	msgA = initA(msgA);
+	msgB = initB(msgB);
+	msgC = initC(msgC);
+	
 	struct sockaddr_in servaddr;
 	memset(&servaddr,0,sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
